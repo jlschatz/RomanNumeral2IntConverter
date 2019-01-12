@@ -9,9 +9,21 @@ import (
 	"strings"
 )
 
+type service struct {
+	input  int64
+	result string
+}
+
+type Service interface {
+	thousands(input int64)
+	hundreds(input int64)
+	tens(input int64)
+	units(input int64)
+}
+
 func main() {
 
-	var result string
+	s := &service{}
 
 	fmt.Println("Roman Numeral Converter by Jugdish Schatz")
 	fmt.Println("-----------------------------------------")
@@ -26,93 +38,111 @@ func main() {
 		}
 
 		dodgeInput = strings.TrimSpace(dodgeInput)
-		input, err := strconv.ParseInt(dodgeInput, 10, 32)
+		convInput, err := strconv.ParseInt(dodgeInput, 10, 32)
+
+		s.input = convInput
 		if err != nil {
 			log.Println("A number... Whats wrong with you???")
-		} else if input > 3999 {
+		} else if s.input > 3999 {
 			log.Println("Number must be smaller that 3999")
 		} else {
 
-			if input/1000 != 0 {
+			if s.input/1000 != 0 {
 
-				th := input / 1000
-				for x := th; x != 0; x-- {
-					result += "M"
-				}
-
-				input = input % 1000
+				s.thousands(s.input)
 			}
 
-			if input/100 != 0 {
+			if s.input/100 != 0 {
 
-				hu := input / 100
-				if hu == 9 {
-					result += "CM"
-				} else if hu > 5 && hu < 9 {
-					result += "D"
-					hu -= 5
-					for x := hu; x != 0; x-- {
-						result += "C"
-					}
-				} else if hu == 5 {
-					result += "D"
-				} else if hu == 4 {
-					result += "CD"
-				} else {
-					for x := hu; x != 0; x-- {
-						result += "C"
-					}
-				}
-
-				input = input % 100
+				s.hundreds(s.input)
 			}
 
-			if input/10 != 0 {
+			if s.input/10 != 0 {
 
-				te := input / 10
-				if te == 9 {
-					result += "XC"
-				} else if te > 5 && te < 9 {
-					result += "L"
-					te -= 5
-					for x := te; x != 0; x-- {
-						result += "X"
-					}
-				} else if te == 5 {
-					result += "L"
-				} else if te == 4 {
-					result += "XL"
-				} else {
-					for x := te; x != 0; x-- {
-						result += "X"
-					}
-				}
-				input = input % 10
+				s.tens(s.input)
 			}
 
-			un := input / 1
-			if un == 9 {
-				result += "IX"
-			} else if un > 5 && un < 9 {
-				result += "V"
-				un -= 5
-				for x := un; x != 0; x-- {
-					result += "I"
-				}
-			} else if un == 5 {
-				result += "V"
-			} else if un == 4 {
-				result += "IV"
-			} else {
-				for x := un; x != 0; x-- {
-					result += "I"
-				}
-			}
+			s.units(s.input)
 
-			log.Println("Your result. Take it and go!!: " + result)
+			log.Println("Your result. Take it and go!!: " + s.result)
 
-			result = ""
+			s.result = ""
 
+		}
+	}
+}
+
+func (s *service) thousands(input int64) {
+	th := input / 1000
+	for x := th; x != 0; x-- {
+		s.result += "M"
+	}
+
+	s.input = input % 1000
+}
+
+func (s *service) hundreds(input int64) {
+	hu := input / 100
+	if hu == 9 {
+		s.result += "CM"
+	} else if hu > 5 && hu < 9 {
+		s.result += "D"
+		hu -= 5
+		for x := hu; x != 0; x-- {
+			s.result += "C"
+		}
+	} else if hu == 5 {
+		s.result += "D"
+	} else if hu == 4 {
+		s.result += "CD"
+	} else {
+		for x := hu; x != 0; x-- {
+			s.result += "C"
+		}
+	}
+
+	s.input = input % 100
+}
+
+func (s *service) tens(input int64) {
+	te := input / 10
+	if te == 9 {
+		s.result += "XC"
+	} else if te > 5 && te < 9 {
+		s.result += "L"
+		te -= 5
+		for x := te; x != 0; x-- {
+			s.result += "X"
+		}
+	} else if te == 5 {
+		s.result += "L"
+	} else if te == 4 {
+		s.result += "XL"
+	} else {
+		for x := te; x != 0; x-- {
+			s.result += "X"
+		}
+	}
+	s.input = input % 10
+}
+
+func (s *service) units(input int64) {
+	un := input / 1
+	if un == 9 {
+		s.result += "IX"
+	} else if un > 5 && un < 9 {
+		s.result += "V"
+		un -= 5
+		for x := un; x != 0; x-- {
+			s.result += "I"
+		}
+	} else if un == 5 {
+		s.result += "V"
+	} else if un == 4 {
+		s.result += "IV"
+	} else {
+		for x := un; x != 0; x-- {
+			s.result += "I"
 		}
 	}
 }
